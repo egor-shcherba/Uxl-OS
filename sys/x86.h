@@ -36,4 +36,23 @@ cpu_halt(void)
   __asm__ volatile ("hlt;");
 }
 
+static inline uint32_t
+cpu_read_cr3(void)
+{
+  uint32_t cr3;
+
+  __asm__ volatile
+  (
+    "mov %%cr3, %0" : "=a" (cr3)
+  );
+
+  return cr3;
+}
+
+static inline void
+cpu_load_cr3(uint32_t phys_addr)
+{
+  __asm__ volatile ("mov %0, %%cr3" :: "a" (phys_addr));
+}
+
 #endif /* NOT _X86_H */
