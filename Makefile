@@ -21,7 +21,16 @@ LDFLAGS = \
 
 SRC = \
 	startup/boot.S \
-	main.c
+	main.c \
+	debug/qemu.c \
+	klib/string.c \
+	klib/vsprintf.c \
+	sys/gdt.c \
+	sys/idt.c \
+	sys/exception.c \
+	sys/pic_i8259.c \
+	sys/isr.S \
+	kernel/syscall.c
 
 OBJ = $(patsubst %.S,%.o,$(patsubst %.c,%.o,$(SRC)))
 
@@ -34,7 +43,7 @@ QEMU = qemu-system-x86_64
 QEMU_FLAGS = \
 	-m 4G -debugcon stdio
 
-all: clean-kernel $(OBJ)
+all: clean $(OBJ)
 	$(LD) $(LDFLAGS) -o $(KERNEL_BINARY) $(OBJ)
 
 %.o: %.c
@@ -43,13 +52,13 @@ all: clean-kernel $(OBJ)
 %.o: %.S
 	$(AS) $(ASFLAGS) -o $@ $<
 
+qemu:
+	$(QEMU) $(QEMU_FLAGS) -kernel $(KERNEL_BINARY)
+
 build-tools:
 	rm -rf $(MKULXFS) $(MKVDISK)
 	make -C ./tools/mkuxlfs/ BUILD_PATH=$(shell pwd) APP_NAME=$(MKUXLFS)
 	make -C ./tools/mkvdisk/ BUILD_PATH=$(shell pwd)
-
-qemu:
-	$(QEMU) $(QEMU_FLAGS) -kernel $(KERNEL_BINARY)
 
 clean-kernel:
 	rm -rf $(OBJ) $(KERNEL_BINARY)
@@ -58,5 +67,8 @@ clean-tools:
 	rm -rf $(MKUXLFS) $(MKVDISK)
 	make -C ./tools/mkuxlfs/ APP_NAME=$(MKUXLFS) clean
 	make -C ./tools/mkvdisk/ clean
+
+clean-bootloader:
+	make -C ./bootloader clean
 
 clean: clean-kernel
