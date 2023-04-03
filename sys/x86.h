@@ -1,9 +1,11 @@
 #ifndef _X86_H
-#define _x86_H
+#define _X86_H
 
 #include <stdint.h>
 
 struct regs {
+  uint32_t cr3;
+
   uint32_t fs, gs, es, ds;
   uint32_t ebp, esi, edi, edx, ecx, ebx, eax;
 
