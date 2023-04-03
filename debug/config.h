@@ -9,7 +9,7 @@
 #define __LOG_SCHED__               (1 << 3)
 #define __LOG_SYSCALL__             (1 << 4)
 
-#define __LOG_EXTRA__               ( 1 )
+#define __LOG_EXTRA__               ( 0 )
 
 #define __DEBUG_LOG_SYSTEM__        ( __LOG_ALL__ )
 
@@ -17,6 +17,7 @@
 #define __LOG_SUB_CPU_IDT__         (1 << 1)
 #define __LOG_SUB_CPU_EXCEPTION__   (1 << 2)
 #define __LOG_SUB_CPU_PIC__         (1 << 3)
+#define __LOG_SUB_CPU_PIT__         (1 << 4)
 
 #define __DEBUG_SUB_CPU__           ( __LOG_ALL__ )
 
