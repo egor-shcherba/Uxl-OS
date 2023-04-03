@@ -29,8 +29,14 @@ SRC = \
 	sys/idt.c \
 	sys/exception.c \
 	sys/pic_i8259.c \
+	sys/pit.c \
 	sys/isr.S \
-	kernel/syscall.c
+	mm/pmm.c \
+	mm/vmm.c \
+	mm/kheap.c \
+	kernel/syscall.c \
+	kernel/task.c \
+	kernel/sched.c
 
 OBJ = $(patsubst %.S,%.o,$(patsubst %.c,%.o,$(SRC)))
 
