@@ -14,9 +14,7 @@ void pmm_init();
 uint32_t alloc_pages(size_t count);
 void free_pages(void *pages, size_t count);
 
-void pmm_map(uint32_t phys_start, size_t count);
-
-void pmm_get_memstat(struct memstat *memstat);
+void pmm_get_memstat(struct memstat*);
 
 static inline uint32_t __attribute__((always_inline))
 alloc_page(void)

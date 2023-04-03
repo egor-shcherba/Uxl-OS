@@ -98,22 +98,6 @@ free_pages(void *pages, uint32_t count)
 }
 
 void
-pmm_map(uint32_t phys_start, uint32_t pg_count)
-{
-  uint32_t start = phys_start / PAGE_SIZE;
-  for (uint32_t i = start; i < start + pg_count; i++)
-    {
-      if (!test_bit(i))
-        _free_pages--;
-
-      set_bit(i);
-    }
-
-  dprintf("mem sets %p - %p pages %u\n",
-    phys_start, phys_start + pg_count * PAGE_SIZE, pg_count);
-}
-
-void
 pmm_get_memstat(struct memstat *memstat)
 {
   memstat->total = TOTAL_PAGES;
@@ -124,6 +108,7 @@ void
 pmm_init(void)
 {
   /* map first 1MB physical memory */
-  pmm_map(0, 256);
+  bitmap_sets(0, 256);
+  _free_pages -= 256;
   dprintf("initialized.\n");
 }
