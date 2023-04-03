@@ -6,7 +6,18 @@
 #include <sys/gdt.h>
 #include <sys/idt.h>
 #include <sys/pic_i8259.h>
+#include <sys/pit.h>
+#include <kernel/sched.h>
+#include <sys/x86.h>
+#include <mm/pmm.h>
+#include <mm/vmm.h>
 
+void
+init_process(void)
+{
+  for (;;)
+    ;
+}
 
 void
 main(void)
@@ -15,10 +26,17 @@ main(void)
 
   gdt_init();
   idt_init();
+  pmm_init();
+  vmm_init();
+  sched_init();
+
   pic_i8259_init();
+  pit_init();
 
   dprintf("all subsystem initialized.\n");
 
-  while (1)
-    ;
+  task_create_init_proc("init process", &init_process);
+
+  sched_enable();
+  /* never reached */
 }
