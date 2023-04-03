@@ -15,6 +15,15 @@
   push %es
   push %gs
   push %fs
+
+  mov $0x10, %eax
+  mov %eax, %ds
+  mov %eax, %es
+  mov %eax, %gs
+  mov %eax, %fs
+
+  mov %cr3, %eax
+  push %eax
 .endm
 
 .macro RESTORE_REGS
@@ -55,15 +64,39 @@ irq_\number:
   jmp irq_common
 .endm
 
+.globl reschedule
+reschedule:
+  push %eax
+  pushf
+  push %cs
+  mov $done, %eax
+  push %eax
+
+  push $0x0
+  push $0x0
+
+  SAVE_REGS
+  push %esp
+  call task_save_context
+  call schedule
+  jmp intr_leave
+
+done:
+  pop %eax
+
+  ret
+
 except_enter:
   SAVE_REGS
   push %esp
+  call task_save_context
   call exception_handler
   jmp intr_leave
 
 irq_common:
   SAVE_REGS
   push %esp
+  call task_save_context
   call pic_i8259_main_handler
   jmp intr_leave
 
@@ -73,12 +106,22 @@ syscall_enter:
   push %eax
   SAVE_REGS
   push %esp
+  call task_save_context
   call syscall_main
   jmp intr_leave
 
 .globl intr_leave
 intr_leave:
-  pop %esp
+  call task_restore_context
+  mov %eax, %esp
+
+  pop %ebx
+  mov %cr3, %eax
+  cmp %eax, %ebx
+  jz dont_switch_cr3
+  mov %eax, %cr3
+
+dont_switch_cr3:
   RESTORE_REGS
   addl $0x8, %esp
   iret
